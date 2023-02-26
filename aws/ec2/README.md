@@ -6,7 +6,7 @@ terraform apply
 
 ## Test
 
-curl <instance name>
+curl instance_ip
 
 ## Destroy
 
