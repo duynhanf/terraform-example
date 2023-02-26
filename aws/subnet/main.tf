@@ -85,6 +85,26 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.my_vpc_private_subnet_rt.id
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
+  security_group_id = aws_vpc.my_vpc.default_security_group_id
+
+  description = "SSH to VPC"
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "TCP"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_http" {
+  security_group_id = aws_vpc.my_vpc.default_security_group_id
+
+  description = "HTTP support"
+  from_port   = 80
+  to_port     = 80
+  ip_protocol = "TCP"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
 # Create an instance
 resource "aws_instance" "my_vpc_public_subnet_instance_1" {
   ami           = "ami-0b828c1c5ac3f13ee"
@@ -92,8 +112,15 @@ resource "aws_instance" "my_vpc_public_subnet_instance_1" {
 
   subnet_id                   = aws_subnet.my_vpc_public_subnet.id
   associate_public_ip_address = true
+  key_name                    = "nhan.dev-kp"
 
-  # key_name = ""
+  user_data = <<EOF
+#!/bin/bash
+sudo apt-get update
+sudo apt-get install nginx -y
+sudo service nginx start
+
+EOF
 
   tags = {
     Name = "my_vpc_public_subnet_instance_1"
