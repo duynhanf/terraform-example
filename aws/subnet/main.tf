@@ -119,6 +119,7 @@ resource "aws_instance" "my_vpc_public_subnet_instance_1" {
 sudo apt-get update
 sudo apt-get install nginx -y
 sudo service nginx start
+sudo sh -c "echo 'Hello, Terraform!' > /var/www/html/index.html"
 
 EOF
 
